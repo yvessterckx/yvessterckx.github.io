@@ -12,15 +12,18 @@
 @media (prefers-color-scheme:light){:root{--bg:#f4f1fb;--bar:#fff;--card:#fff;--line:#d9d3ec;--text:#1d1830;--muted:#554d70;--chip:#ebe6f8;--chipt:#3b3160;--acc:#5b3fd6;--warm:#c2410c;--shadow:rgba(40,30,80,.18)}}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+body{margin:0;min-height:100vh;display:flex;flex-direction:column;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
 header{background:var(--bar);border-bottom:1px solid var(--line)}
 .bar{max-width:1200px;margin:0 auto;padding:0 16px;height:56px;display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.15rem}
 .bar svg{width:28px;height:28px;flex:none}
-main{max-width:1200px;margin:0 auto;padding:28px 16px 48px}
+main{flex:1;width:100%;max-width:1200px;margin:0 auto;padding:28px 16px 48px}
 h1{margin:0 0 20px;font-size:1.6rem;line-height:1.2}
 .ai{margin-left:auto;font-size:.75rem;font-weight:600;letter-spacing:.04em;color:var(--chipt);background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
-.lead{margin:-8px 0 22px;color:var(--muted);max-width:60ch}
-footer{max-width:1200px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:.85rem}
+.notice{display:flex;gap:12px;align-items:flex-start;margin:0 0 24px;padding:12px 16px;max-width:640px;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:12px;color:var(--text);font-size:.95rem}
+.notice svg{flex:none;width:20px;height:20px;margin-top:2px;color:var(--acc)}
+.notice p{margin:0}
+footer{background:var(--bar);border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
+footer p{max-width:1200px;margin:0 auto;padding:18px 16px}
 .grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));list-style:none;margin:0;padding:0}
 .tile{display:block;color:inherit;text-decoration:none;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:transform .15s,border-color .15s,box-shadow .15s}
 .tile:hover{transform:translateY(-4px);border-color:var(--warm);box-shadow:0 10px 24px var(--shadow)}
@@ -40,12 +43,12 @@ footer{max-width:1200px;margin:0 auto;padding:0 16px 40px;color:var(--muted);fon
 <header><div class="bar"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#6d4aff"/><path d="M12 9l11 7-11 7z" fill="#fff"/></svg><span>Side Quests</span><span class="ai">AI-made</span></div></header>
 <main>
 <h1>Games</h1>
-<p class="lead">Small browser games designed and built together with AI. Free to play, no install, no login.</p>
+<div class="notice" role="note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><p>Small browser games designed and built together with AI. Free to play, no install, no login.</p></div>
 <ul class="grid" id="grid">
 </ul>
 <noscript><p>Play: <a href="curtain-climber/">Curtain Climber</a> | <a href="hollowed/">Hollowed</a></p></noscript>
 </main>
-<footer>Made with AI: the code, art and sound of these games are written by Claude (Anthropic) and play-tested by a human.</footer>
+<footer><p>Made with AI: the code, art and sound of these games are written by Claude (Anthropic) and play-tested by a human.</p></footer>
 <script>
 // To add a game: append one object here.
 var GAMES=[
