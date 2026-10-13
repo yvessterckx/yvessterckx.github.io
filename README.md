@@ -13,7 +13,7 @@ The game source repos are private, so this repo holds a copy of each game.
 ## Update a game
 
 ```bash
-tools/publish-curtain-climber.sh [path/to/curtain-climber]   # default ~/Sites/game.dev
+tools/publish-curtain-climber.sh [path/to/curtain-climber]   # default ~/Sites/curtain-climber
 tools/publish-hollowed.sh [path/to/hollowed]                 # default ~/Sites/hollowed; runs npm ci + npm run build
 git add -A && git commit -m "Update game" && git push
 ```

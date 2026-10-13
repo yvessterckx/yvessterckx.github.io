@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Build Curtain Climber (Vite) and copy its dist/ into ./curtain-climber/ (no commit, no push).
-# Usage: tools/publish-curtain-climber.sh [path-to-game-repo]   (default: ~/Sites/game.dev)
+# Usage: tools/publish-curtain-climber.sh [path-to-game-repo]   (default: ~/Sites/curtain-climber)
 set -euo pipefail
-SRC="${1:-$HOME/Sites/game.dev}"
+SRC="${1:-$HOME/Sites/curtain-climber}"
 DEST="$(cd "$(dirname "$0")/.." && pwd)/curtain-climber"
 [ -f "$SRC/package.json" ] && grep -q '"name": "curtain-climber"' "$SRC/package.json" || { echo "not a Curtain Climber checkout: $SRC" >&2; exit 1; }
 (cd "$SRC" && { [ -d node_modules ] || npm ci; } && npm run build)
