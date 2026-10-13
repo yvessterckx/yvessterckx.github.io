@@ -9,5 +9,8 @@ DEST="$(cd "$(dirname "$0")/.." && pwd)/hollowed"
 [ -f "$SRC/dist/index.html" ] || { echo "build produced no dist/index.html" >&2; exit 1; }
 mkdir -p "$DEST"
 rsync -a --delete "$SRC/dist/" "$DEST/"
+# keep the tile's version in index.html in sync with the published build
+VER="$(node -p "require('$SRC/package.json').version")"
+perl -0pi -e 's|(href:"hollowed/",version:")[^"]*(")|${1}'"$VER"'${2}|' "$DEST/../index.html"
 echo "Published hollowed -> $DEST ($(find "$DEST" -type f | wc -l | tr -d ' ') files, $(du -sh "$DEST" | cut -f1))"
 git -C "$DEST/.." status --short
