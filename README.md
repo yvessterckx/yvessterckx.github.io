@@ -1,6 +1,6 @@
 # yvessterckx.github.io
 
-Games portal served at https://yvessterckx.github.io/. Static files only, no build step here.
+Games portal served at https://yvessterckx.github.io/: small browser games made with AI (Claude). Static files only, no build step here.
 
 - `index.html`: the portal page. To add a game, append one object to the `GAMES` array in it.
 - `assets/`: tile cover images.
