@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <title>Hollowed</title>
     <style>
-      /* Loading screen: the same overlay as the sister game Curtain Climber (inline, so it shows before any module loads). */
+      /* Loading screen: the same overlay as the sister game Pawcour (inline, so it shows before any module loads). */
       #load{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;color:#f6efff;font-family:system-ui,sans-serif;
         background:radial-gradient(ellipse at 50% 35%,#4a3470 0%,#2a2040 60%,#181028 100%);transition:opacity .35s ease;-webkit-user-select:none;user-select:none}
       #load.out{opacity:0;pointer-events:none}
@@ -24,7 +24,7 @@
       #load.bad .err{display:block}
       @media (prefers-reduced-motion:reduce){#load,#load .fill{transition:none}}
     </style>
-    <script type="module" crossorigin src="./assets/index-D1epAZhE.js"></script>
+    <script type="module" crossorigin src="./assets/index-BUgN3K0i.js"></script>
   </head>
   <body>
     <div id="load" role="dialog" aria-label="Loading Hollowed">
@@ -39,7 +39,7 @@
       </div>
     </div>
     <script>
-      // Loading overlay controller (plain script, no dependencies: it runs before any module), as in Curtain Climber. src/boot.js and src/main.js drive it
+      // Loading overlay controller (plain script, no dependencies: it runs before any module), as in Pawcour. src/boot.js and src/main.js drive it
       // through window.__hollowedBoot: progress(pct, label), stage(pct, label) (same, resolves after the browser painted), ready(), fail(message) (+ codeReady(), added by boot.js).
       (function () {
         var $ = function (id) { return document.getElementById(id); };
