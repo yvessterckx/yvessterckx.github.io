@@ -6,6 +6,7 @@ Games portal served at https://yvessterckx.github.io/: small browser games made 
 - `assets/`: tile cover images.
 - `curtain-climber/`: built copy of Curtain Climber (the Vite dist/ output).
 - `hollowed/`: built copy of Hollowed (Vite `dist/`, relative base).
+- `8-ball-golf/`: built copy of 8 Ball Golf (Vite `dist/`, relative base).
 - `tools/`: publish scripts. They copy files into this repo and print `git status`; they never commit or push.
 
 The game source repos are private, so this repo holds a copy of each game.
@@ -15,5 +16,6 @@ The game source repos are private, so this repo holds a copy of each game.
 ```bash
 tools/publish-curtain-climber.sh [path/to/curtain-climber]   # default ~/Sites/curtain-climber
 tools/publish-hollowed.sh [path/to/hollowed]                 # default ~/Sites/hollowed; runs npm ci + npm run build
+tools/publish-8-ball-golf.sh [path/to/8-ball-golf]           # default ~/Sites/8-ball-golf; runs npm ci + npm run build
 git add -A && git commit -m "Update game" && git push
 ```
