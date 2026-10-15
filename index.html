@@ -51,8 +51,6 @@ main.wrap{flex:1;padding-bottom:56px}
 .info p{margin:0 0 16px;color:var(--muted);font-size:1rem}
 .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
 .tags span{background:var(--chip);color:var(--chipt);border:1px solid var(--line);border-radius:999px;padding:2px 11px;font-size:.8rem}
-.soon{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;height:100%;min-height:150px;padding:24px;text-align:center;border:2px dashed var(--line);border-radius:20px;color:var(--muted);font-weight:600;background:linear-gradient(160deg,var(--glow1),transparent 60%)}
-.soon b{font-size:2rem;line-height:1;color:var(--acc);font-weight:400}
 footer{position:sticky;bottom:0;z-index:10;background:var(--bar);border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
 footer p{margin:0;padding:18px 0}
 @media (prefers-reduced-motion:reduce){.sp{animation:none}.tile,.cover img,.play{transition:none}.tile:hover,.tile:focus-visible{transform:none}.tile:hover .cover img,.tile:focus-visible .cover img{transform:none}}
@@ -94,7 +92,6 @@ if(x.version)cv.appendChild(el("span","ver","v"+x.version));
 var pl=el("span","play");pl.setAttribute("aria-hidden","true");pl.innerHTML='<svg viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z"/></svg>';cv.appendChild(pl);
 x.tags.forEach(function(s){t.appendChild(el("span",0,s))});
 info.append(el("h3",0,x.title),el("p",0,x.desc),t);a.append(cv,info);li.appendChild(a);g.appendChild(li)});
-var s=el("li");s.setAttribute("aria-hidden","true");var so=el("div","soon");so.append(el("b",0,"+"),el("span",0,"More side quests soon"));s.appendChild(so);g.appendChild(s);
 document.getElementById("cnt").textContent=GAMES.length+(GAMES.length===1?" game":" games");
 </script>
 </body>
