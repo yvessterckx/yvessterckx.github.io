@@ -1,1 +1,0 @@
-function f(u,t,r){try{const e=r!==void 0?r:localStorage;if(!e||e.getItem(t)!==null&&e.getItem(t)!==void 0)return!1;const n=e.getItem(u);return n==null?!1:(e.setItem(t,n),!0)}catch{return!1}}export{f as m};

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Pawcour</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#2a2040;font-family:system-ui,sans-serif}
+  html{overscroll-behavior:none}
+  canvas{display:block;touch-action:none;-webkit-touch-callout:none} /* v0.8.1 mobile: the game canvas never scrolls / zooms / opens a long-press menu */
+  #msg{position:fixed;left:50%;top:clamp(48px,9vh,110px);transform:translateX(-50%);max-width:80vw;padding:.45em 1.2em;box-sizing:border-box;text-align:center;white-space:nowrap;
+    font-size:clamp(14px,calc(.5vw + .9vmin + 8px),24px);font-weight:600;letter-spacing:.02em;color:#fff4e0;background:rgba(20,16,40,.62);border:1px solid rgba(255,200,120,.25);border-radius:999px;
+    box-shadow:0 6px 24px rgba(8,4,24,.45);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);opacity:0;transition:opacity .4s;pointer-events:none;z-index:15}
+  #ver{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));font-size:clamp(10px,calc(.25vw + .4vmin + 6px),13px);letter-spacing:.06em;color:rgba(246,239,255,.5);
+    font-variant-numeric:tabular-nums;pointer-events:none;z-index:15}
+
+  #load{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;color:#f6efff;
+    background:radial-gradient(ellipse at 50% 35%,#4a3470 0%,#2a2040 60%,#181028 100%);transition:opacity .35s ease;-webkit-user-select:none;user-select:none}
+  #load.out{opacity:0;pointer-events:none}
+  #load .card{width:min(360px,100%);box-sizing:border-box;padding:28px 28px 24px;text-align:center;background:rgba(20,16,40,.62);border:1px solid rgba(255,200,120,.25);border-radius:20px;
+    box-shadow:0 10px 40px rgba(8,4,24,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  #load svg{width:84px;height:84px;display:block;margin:0 auto 6px}
+  #load h1{margin:0 0 18px;font-size:22px;font-weight:800;letter-spacing:.16em;text-indent:.16em;color:#fff4e0}
+  #load .track{height:10px;border-radius:999px;background:rgba(246,239,255,.14);overflow:hidden}
+  #load .fill{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#ffb35c,#ffd98a);transition:width .18s linear}
+  #load .row{display:flex;justify-content:space-between;gap:12px;margin-top:10px;font-size:13px;letter-spacing:.04em;color:rgba(246,239,255,.75);font-variant-numeric:tabular-nums}
+  #load .hint{min-height:1.3em;margin:10px 0 0;font-size:12px;color:rgba(255,217,138,.85)}
+  #load .err{display:none;margin-top:14px}
+  #load .err p{margin:0 0 12px;font-size:14px;line-height:1.4;color:#ffd2c8}
+  #load button{font:inherit;font-weight:700;color:#2a2040;background:#ffd98a;border:0;border-radius:999px;padding:.55em 1.6em;cursor:pointer}
+  #load.bad .track,#load.bad .row,#load.bad .hint{display:none}
+  #load.bad .err{display:block}
+  @media (prefers-reduced-motion:reduce){#load,#load .fill{transition:none}}
+</style>
+  <script type="module" crossorigin src="./assets/index-DtRasPCf.js"></script>
+</head>
+<body>
+<div id="load" role="dialog" aria-label="Loading Pawcour">
+  <div class="card">
+    <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M10 8l14 12h16L54 8l2 26c0 14-11 24-24 24S8 48 8 34z" fill="#ffb35c"/><ellipse cx="23" cy="34" rx="3.2" ry="4.2" fill="#2a2040"/><ellipse cx="41" cy="34" rx="3.2" ry="4.2" fill="#2a2040"/><path d="M29.5 42h5l-2.5 3z" fill="#ff8aa0"/><path d="M32 45v2.5M32 47.5c-2 2-5 2-6 0M32 47.5c2 2 5 2 6 0" stroke="#2a2040" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg>
+    <h1>PAWCOUR</h1>
+    <div class="track" id="loadbar" role="progressbar" aria-label="Loading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="fill" id="loadfill"></div></div>
+    <div class="row"><span id="loadlabel" role="status" aria-live="polite">Loading code…</span><span id="loadpct">0%</span></div>
+    <p class="hint" id="loadhint"></p>
+    <div class="err" role="alert"><p id="loaderr"></p><button type="button" id="loadretry">Reload</button></div>
+    <noscript><p style="margin:14px 0 0;font-size:14px;color:#ffd2c8">Pawcour needs JavaScript. Please turn it on and reload the page.</p></noscript>
+  </div>
+</div>
+<script>
+// Loading overlay controller (plain script, no dependencies: it runs before any module). src/boot.js and src/main.js drive it through
+// window.__ccBoot: progress(pct, label), stage(pct, label) (same, resolves after the browser painted), ready(), fail(message) (+ codeReady(), added by boot.js).
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var box = $('load'), bar = $('loadbar'), fill = $('loadfill'), lab = $('loadlabel'), pct = $('loadpct'), hint = $('loadhint');
+  var t0 = Date.now(), last = 0, finished = false;
+  function progress(p, label) {
+    if (finished) return;
+    p = Math.min(100, Math.max(last, Number(p) || 0)); last = p;
+    var r = Math.round(p);
+    fill.style.width = p.toFixed(1) + '%'; pct.textContent = r + '%'; bar.setAttribute('aria-valuenow', String(r));
+    if (label && lab.textContent !== label) lab.textContent = label;
+  }
+  function paint() { // let the browser draw the bar (rAF does not fire in a background tab, so a timer races it)
+    return new Promise(function (res) {
+      var d = false, go = function () { if (!d) { d = true; res(); } };
+      if (window.requestAnimationFrame) requestAnimationFrame(function () { setTimeout(go, 0); });
+      setTimeout(go, 40);
+    });
+  }
+  function fail(msg) {
+    if (finished) return;
+    finished = true; clearTimeout(slow);
+    $('loaderr').textContent = msg || 'Something went wrong while loading the game.';
+    box.className = 'bad'; box.removeAttribute('aria-busy');
+  }
+  function ready() {
+    if (finished) return Promise.resolve();
+    progress(100, 'Ready');
+    var wait = Math.max(0, 300 - (Date.now() - t0)); // no flash when everything was cached
+    return new Promise(function (res) {
+      setTimeout(function () {
+        finished = true; clearTimeout(slow);
+        box.className = 'out';
+        setTimeout(function () { if (box.parentNode) box.parentNode.removeChild(box); }, 450);
+        res();
+      }, wait);
+    });
+  }
+  var slow = setTimeout(function () { if (!finished) hint.textContent = 'Still loading… slow connection?'; }, 20000);
+  $('loadretry').addEventListener('click', function () { location.reload(); });
+  window.addEventListener('error', function (e) { // capture phase: also sees a failed <script>/<link> load (Vite drops the onerror attribute of the entry script)
+    if (finished) return;
+    if (e.target && e.target !== window && e.target.tagName) { if (e.target.tagName === 'SCRIPT' || e.target.tagName === 'LINK') fail('The game files could not be loaded.'); return; }
+    if (e.error || (e.filename && e.filename.indexOf(location.origin) === 0)) fail(/webgl/i.test(String(e.message)) ? 'WebGL is not available in this browser, so Pawcour cannot run.' : 'Something went wrong while loading the game.');
+  }, true); // during boot only; cross-origin noise ("Script error.") is ignored
+  window.addEventListener('unhandledrejection', function () { fail('Something went wrong while loading the game.'); });
+  box.setAttribute('aria-busy', 'true');
+  window.__ccBoot = { progress: progress, stage: function (p, l) { progress(p, l); return paint(); }, ready: ready, fail: fail };
+})();
+</script>
+<div id="ver"></div>
+<div id="msg"></div>
+</body>
+</html>

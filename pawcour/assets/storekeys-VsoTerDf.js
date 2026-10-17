@@ -1,0 +1,1 @@
+function a(e,n,u){try{const t=u!==void 0?u:localStorage;if(!t||t.getItem(n)!==null&&t.getItem(n)!==void 0)return!1;for(const f of Array.isArray(e)?e:[e]){const r=t.getItem(f);if(r!=null)return t.setItem(n,r),!0}return!1}catch{return!1}}export{a as m};
