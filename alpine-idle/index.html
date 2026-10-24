@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <title>Alpine Idle</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <style>
+      html,body{margin:0;height:100%;overflow:hidden;background:#1d2a3a;font-family:system-ui,sans-serif;touch-action:none;-webkit-user-select:none;user-select:none}
+      canvas{display:block}
+      /* Loading screen: the same overlay as the sister games Pawcour and Hollowed (inline, so it shows before any module loads). */
+      #load{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;color:#f6efff;font-family:system-ui,sans-serif;
+        background:radial-gradient(ellipse at 50% 35%,#4a3470 0%,#2a2040 60%,#181028 100%);transition:opacity .35s ease;-webkit-user-select:none;user-select:none}
+      #load.out{opacity:0;pointer-events:none}
+      #load .card{width:min(360px,100%);box-sizing:border-box;padding:28px 28px 24px;text-align:center;background:rgba(20,16,40,.62);border:1px solid rgba(255,200,120,.25);border-radius:20px;
+        box-shadow:0 10px 40px rgba(8,4,24,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+      #load svg{width:84px;height:84px;display:block;margin:0 auto 6px}
+      #load h1{margin:0 0 18px;font-size:22px;font-weight:800;letter-spacing:.16em;text-indent:.16em;color:#fff4e0}
+      #load .track{height:10px;border-radius:999px;background:rgba(246,239,255,.14);overflow:hidden}
+      #load .fill{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#ffb35c,#ffd98a);transition:width .18s linear}
+      #load .row{display:flex;justify-content:space-between;gap:12px;margin-top:10px;font-size:13px;letter-spacing:.04em;color:rgba(246,239,255,.75);font-variant-numeric:tabular-nums}
+      #load .hint{min-height:1.3em;margin:10px 0 0;font-size:12px;color:rgba(255,217,138,.85)}
+      #load .err{display:none;margin-top:14px}
+      #load .err p{margin:0 0 12px;font-size:14px;line-height:1.4;color:#ffd2c8}
+      #load button{font:inherit;font-weight:700;color:#2a2040;background:#ffd98a;border:0;border-radius:999px;padding:.55em 1.6em;cursor:pointer}
+      #load.bad .track,#load.bad .row,#load.bad .hint{display:none}
+      #load.bad .err{display:block}
+      @media (prefers-reduced-motion:reduce){#load,#load .fill{transition:none}}
+    </style>
+    <script type="module" crossorigin src="./assets/index-B6tB_NS-.js"></script>
+  </head>
+  <body>
+    <div id="load" role="dialog" aria-label="Loading Alpine Idle">
+      <div class="card">
+        <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M2 52 L22 18 L30 30 L40 12 L62 52Z" fill="#6f7fa8"/><path d="M22 18 L28 28 L24 26 L19 30 L17 27Z M40 12 L47 25 L43 23 L39 27 L35 22Z" fill="#fff4e0"/><path d="M2 52 L62 52 L62 58 L2 58Z" fill="#5f9e4a"/><path d="M26 52 V40 L33 34 L40 40 V52Z" fill="#c98a4b"/><path d="M24 41 L33 32.5 L42 41" stroke="#7a4a2a" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><rect x="31" y="45" width="4" height="7" fill="#5a3420"/><circle cx="12" cy="49" r="3" fill="#2f6b3a"/><path d="M12 38 L17 49 L7 49Z M52 40 L56.5 50 L47.5 50Z" fill="#2f6b3a"/></svg>
+        <h1>ALPINE IDLE</h1>
+        <div class="track" id="loadbar" role="progressbar" aria-label="Loading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="fill" id="loadfill"></div></div>
+        <div class="row"><span id="loadlabel" role="status" aria-live="polite">Loading code…</span><span id="loadpct">0%</span></div>
+        <p class="hint" id="loadhint"></p>
+        <div class="err" role="alert"><p id="loaderr"></p><button type="button" id="loadretry">Reload</button></div>
+        <noscript><p style="margin:14px 0 0;font-size:14px;color:#ffd2c8">Alpine Idle needs JavaScript. Please turn it on and reload the page.</p></noscript>
+      </div>
+    </div>
+    <script>
+      // Loading overlay controller (plain script, no dependencies: it runs before any module), the same as Pawcour and Hollowed. src/boot.js and src/main.js drive it
+      // through window.__aiBoot: progress(pct, label), stage(pct, label) (same, resolves after the browser painted), ready(), fail(message) (+ codeReady(), added by boot.js).
+      (function () {
+        var $ = function (id) { return document.getElementById(id); };
+        var box = $('load'), bar = $('loadbar'), fill = $('loadfill'), lab = $('loadlabel'), pct = $('loadpct'), hint = $('loadhint');
+        var t0 = Date.now(), last = 0, finished = false;
+        function progress(p, label) {
+          if (finished) return;
+          p = Math.min(100, Math.max(last, Number(p) || 0)); last = p;
+          var r = Math.round(p);
+          fill.style.width = p.toFixed(1) + '%'; pct.textContent = r + '%'; bar.setAttribute('aria-valuenow', String(r));
+          if (label && lab.textContent !== label) lab.textContent = label;
+        }
+        function paint() { // let the browser draw the bar (rAF does not fire in a background tab, so a timer races it)
+          return new Promise(function (res) {
+            var d = false, go = function () { if (!d) { d = true; res(); } };
+            if (window.requestAnimationFrame) requestAnimationFrame(function () { setTimeout(go, 0); });
+            setTimeout(go, 40);
+          });
+        }
+        function fail(msg) {
+          if (finished) return;
+          finished = true; clearTimeout(slow);
+          $('loaderr').textContent = msg || 'Something went wrong while loading the game.';
+          box.className = 'bad'; box.removeAttribute('aria-busy');
+        }
+        function ready() {
+          if (finished) return Promise.resolve();
+          progress(100, 'Ready');
+          var wait = Math.max(0, 300 - (Date.now() - t0)); // no flash when everything was cached
+          return new Promise(function (res) {
+            setTimeout(function () {
+              finished = true; clearTimeout(slow);
+              box.className = 'out';
+              setTimeout(function () { if (box.parentNode) box.parentNode.removeChild(box); }, 450);
+              res();
+            }, wait);
+          });
+        }
+        var slow = setTimeout(function () { if (!finished) hint.textContent = 'Still loading… slow connection?'; }, 20000);
+        $('loadretry').addEventListener('click', function () { location.reload(); });
+        window.addEventListener('error', function (e) { // capture phase: also sees a failed <script>/<link> load (Vite drops the onerror attribute of the entry script)
+          if (finished) return;
+          if (e.target && e.target !== window && e.target.tagName) { if (e.target.tagName === 'SCRIPT' || e.target.tagName === 'LINK') fail('The game files could not be loaded.'); return; }
+          if (e.error || (e.filename && e.filename.indexOf(location.origin) === 0)) fail(/webgl/i.test(String(e.message)) ? 'WebGL is not available in this browser, so Alpine Idle cannot run.' : 'Something went wrong while loading the game.');
+        }, true); // during boot only; cross-origin noise ("Script error.") is ignored
+        window.addEventListener('unhandledrejection', function () { fail('Something went wrong while loading the game.'); });
+        box.setAttribute('aria-busy', 'true');
+        window.__aiBoot = { progress: progress, stage: function (p, l) { progress(p, l); return paint(); }, ready: ready, fail: fail };
+      })();
+    </script>
+    <div id="stage"></div>
+    <div id="ui"></div>
+  </body>
+</html>

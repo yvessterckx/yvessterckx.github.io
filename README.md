@@ -8,6 +8,7 @@ Games portal served at https://yvessterckx.github.io/: small browser games made 
 - `curtain-climber/`: only a redirect page to `pawcour/` (the old address).
 - `hollowed/`: built copy of Hollowed (Vite `dist/`, relative base).
 - `8-ball-golf/`: built copy of 8 Ball Golf (Vite `dist/`, relative base).
+- `alpine-idle/`: built copy of Alpine Idle (Vite `dist/`, relative base).
 - `tools/`: publish scripts. They copy files into this repo and print `git status`; they never commit or push.
 
 The game source repos are private, so this repo holds a copy of each game.
@@ -18,5 +19,6 @@ The game source repos are private, so this repo holds a copy of each game.
 tools/publish-pawcour.sh [path/to/pawcour]                   # default ~/Sites/curtain-climber (the local folder keeps its old name); runs npm run build
 tools/publish-hollowed.sh [path/to/hollowed]                 # default ~/Sites/hollowed; runs npm ci + npm run build
 tools/publish-8-ball-golf.sh [path/to/8-ball-golf]           # default ~/Sites/8-ball-golf; runs npm ci + npm run build
+tools/publish-alpine-idle.sh [path/to/alpine-idle]           # default ~/Sites/alpine-idle; runs npm ci + npm run build
 git add -A && git commit -m "Update game" && git push
 ```
